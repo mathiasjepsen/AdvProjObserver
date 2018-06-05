@@ -3,13 +3,16 @@ package websockettestweb;
 import java.util.Set;
 import javax.websocket.Session;
 
+
+
 /**
  *
- * @author mathiasjepsen
+ * @author thomasthimothee
  */
-public interface IEasyWebsocket extends Observer {
+public interface IEasyWebsocket{
     
     String handleMessage(String msg);
     void pushNotification(Set<Session> sessions);
+    
     
 }

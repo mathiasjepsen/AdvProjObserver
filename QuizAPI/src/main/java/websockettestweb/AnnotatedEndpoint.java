@@ -19,45 +19,46 @@ import javax.websocket.server.ServerEndpoint;
 
 /**
  *
- * @author mathiasjepsen
+ * @author thomasthimothee
  */
 @ServerEndpoint("/api")
-public class AnnotatedEndpoint implements Observable {
+public class AnnotatedEndpoint {
 
-    private IEasyWebsocket userImplementation;
-    private static final Set<Session> SESSIONS = Collections.synchronizedSet(new HashSet<Session>());
-    private static final List<Observer> OBSERVERS = new ArrayList();
+    private static IEasyWebsocket userImplementation;
+    private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>()); //A collection that contains no duplicate elements
 
     public AnnotatedEndpoint() throws InstantiationException, IllegalAccessException {
-        try {
+        if (userImplementation == null) {
+            System.out.println("in constructor");
+            try {
+                URL url = getClass().getResource(".");
+                File dir = new File(url.toURI());
 
-            URL url = getClass().getResource(".");
-            File dir = new File(url.toURI());
-            
-            MyClassFinder cf = new MyClassFinder();            
-            userImplementation = cf.findClass(dir);
-            addObserver(userImplementation);
+                MyClassFinder cf = new MyClassFinder();
 
-            Thread t1 = new Thread(() -> {
-                userImplementation.pushNotification(SESSIONS);
-            });
-            t1.start();
+                userImplementation = cf.findClass(dir);
 
-        } catch (URISyntaxException | SecurityException | IllegalArgumentException ex) {
-            Logger.getLogger(MyClassFinder.class.getName()).log(Level.SEVERE, null, ex);
+                Thread t1 = new Thread(() -> {
+                    userImplementation.pushNotification(sessions);
+                });
+                t1.start();
+
+            } catch (URISyntaxException | SecurityException | IllegalArgumentException ex) {
+                Logger.getLogger(MyClassFinder.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
     @OnOpen
     public void onOpen(Session session) {
-        SESSIONS.add(session);
+        sessions.add(session);
         System.out.println("added session");
 
     }
 
     @OnMessage
     public void onMessage(Session session, String msg) throws IOException {
-        System.out.println("amount of sessions " + SESSIONS.size());
+        System.out.println("amount of sessions " + sessions.size());
         System.out.println("Recived message" + msg);
         session.getBasicRemote().sendText(userImplementation.handleMessage(msg));
     }
@@ -65,24 +66,7 @@ public class AnnotatedEndpoint implements Observable {
     @OnClose
     public void onClose(Session session) {
         System.out.println("Session: " + session.getId() + " has disconected");
-        SESSIONS.remove(session);
-    }
-
-    @Override
-    public void notifyObservers() {
-        for (Observer o : OBSERVERS) {
-            o.update(SESSIONS);
-        } 
-    }
-
-    @Override
-    public void addObserver(Observer o) {
-        OBSERVERS.add(o);
-    }
-
-    @Override
-    public void removeObserver(Observer o) {
-        OBSERVERS.remove(o);
+        sessions.remove(session);
     }
 
 }

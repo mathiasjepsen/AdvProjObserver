@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package websockettestweb;
 
 import java.io.File;
@@ -21,17 +26,17 @@ public class MyClassFinder {
     IEasyWebsocket findClass(File dir) {
         try {
             ClassFinder finder = new ClassFinder();
-            finder.add(dir);
+            finder.add(dir); //Add a jar file, zip file or directory to the list of places to search for classes.
             ClassFilter filter
-                    = new AndClassFilter 
+                    = new AndClassFilter //Construct a new AndClassFilter with a set of contained filters.
                             // Must not be an interface
                             (new NotClassFilter(new InterfaceOnlyClassFilter()),
                             // Must implement the ITestClass interface
                             new SubclassClassFilter(IEasyWebsocket.class));
 
             ArrayList<ClassInfo> foundClasses = new ArrayList();
-            finder.findClasses(foundClasses, filter);
-            
+            finder.findClasses(foundClasses, filter); // search in dir for classes that match ANDfilter, and put them in foundClasses
+
             //hardcode that we get the first class that matches these criteria
             ClassInfo classInfo = foundClasses.get(0);
             
@@ -42,5 +47,5 @@ public class MyClassFinder {
         }
         return null;
     }
-    
+
 }

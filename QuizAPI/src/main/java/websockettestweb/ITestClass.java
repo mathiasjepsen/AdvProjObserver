@@ -7,12 +7,9 @@ package websockettestweb;
 
 /**
  *
- * @author mathiasjepsen
+ * @author thomasthimothee
  */
-public interface Observable {
-    
-    public void notifyObservers();
-    public void addObserver(Observer o);
-    public void removeObserver(Observer o);
-    
+public interface ITestClass {
+    public void run();
+    public void stop();
 }

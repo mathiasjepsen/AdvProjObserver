@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package websockettestweb;
 
 import java.io.IOException;
@@ -8,10 +13,11 @@ import javax.websocket.Session;
 
 /**
  *
- * @author pravien
+ * @author thomasthimothee
  */
 public class EasyWebSocketImpl implements IEasyWebsocket {
-
+    int countdown = 30;
+    
     @Override
     public String handleMessage(String msg) {
         return "message received: " + msg;
@@ -19,29 +25,28 @@ public class EasyWebSocketImpl implements IEasyWebsocket {
 
     @Override
     public void pushNotification(Set<Session> sessions) {
-        int count = 1;
-        while (true) {
-            for (Session s : sessions) {
+            for (Session s : sessions) {   
                 if (s.isOpen()) {
                     try {
-                        System.out.println("sending..to " + s.getId());
-                        s.getBasicRemote().sendText("message " + count);
-                        count++;
+                        if (countdown > 0){
+                            s.getBasicRemote().sendText("Bomb explodes in "+ countdown + " to session " + s.getId()+1);
+
+                        }
+                        else s.getBasicRemote().sendText("This session " + s.getId()+1 + " is soooo dead ");
                     } catch (IOException e) {}
                 }
+                
             }
+            countdown --;
             try {
-                Thread.sleep(3000);
+                Thread.sleep(1000);
+                this.pushNotification(sessions);
             } catch (InterruptedException ex) {
                 Logger.getLogger(EasyWebSocketImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        
 
     }
 
-    @Override
-    public void update(Object o) {
-        pushNotification((Set<Session>) o);
-    }
 
 }

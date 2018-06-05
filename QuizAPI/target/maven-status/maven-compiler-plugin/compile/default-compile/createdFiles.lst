@@ -1,6 +1,6 @@
 websockettestweb/AnnotatedEndpoint.class
-websockettestweb/Observable.class
 websockettestweb/IEasyWebsocket.class
-websockettestweb/Observer.class
+websockettestweb/TestClassImpl.class
+websockettestweb/ITestClass.class
 websockettestweb/EasyWebSocketImpl.class
 websockettestweb/MyClassFinder.class
